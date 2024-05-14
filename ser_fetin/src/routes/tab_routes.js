@@ -1,8 +1,9 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Feather } from '@expo/vector-icons';
+import { Feather, FontAwesome6 } from '@expo/vector-icons';
 
 import Home from '../pages/home';
-import Reminder from '../pages/addReminder';
+import Settings from '../pages/settings';
+import HouseState from '../pages/houseState';
 import Geolocalization from '../pages/geo';
 
 const Tab = createBottomTabNavigator();
@@ -14,16 +15,16 @@ export default function RoutesTab(){
                     name="Home"
                     component={Home}
                     options={{
-                        tabBarIcon: ({color, size}) => <Feather name='home' color={color} size={size}/>,
+                        tabBarIcon: ({color, size}) => <FontAwesome6 name='list-alt' color={color} size={size}/>,
                         tabBarLabel: 'Meus lembretes'
                     }}
                 />
                 <Tab.Screen
-                    name="Reminder"
-                    component={Reminder}
+                    name="HouseState"
+                    component={HouseState}
                     options={{
-                        tabBarIcon: ({color, size}) => <Feather name='plus-circle' color={color} size={size}/>,
-                        tabBarLabel: 'Add lembretes'
+                        tabBarIcon: ({color, size}) => <FontAwesome6 name='house-lock' color={color} size={size}/>,
+                        tabBarLabel: 'Estado da casa'
                     }}
                 />
                 <Tab.Screen
@@ -32,6 +33,14 @@ export default function RoutesTab(){
                     options={{
                         tabBarIcon: ({color, size}) => <Feather name='map' color={color} size={size}/>,
                         tabBarLabel: 'Geolocalização'
+                    }}
+                />
+                <Tab.Screen
+                    name="Settings"
+                    component={Settings}
+                    options={{
+                        tabBarIcon: ({color, size}) => <Feather name='settings' color={color} size={size}/>,
+                        tabBarLabel: 'Configuração'
                     }}
                 />
         </Tab.Navigator>

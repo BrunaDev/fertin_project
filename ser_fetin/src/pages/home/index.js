@@ -11,7 +11,8 @@ import {
     FlatList
 } from 'react-native';
 
-import { styles } from '../../styles/home/styles';
+import { FontAwesome6 } from '@expo/vector-icons';
+import { styles } from '../../styles/addReminder/styles';
 import { useIsFocused } from '@react-navigation/native';
 
 import { useNavigation } from '@react-navigation/native';
@@ -50,7 +51,10 @@ export default function Home(){
                 <Animatable.View animation="fadeInLeft" delay={500} style={styles.containerBody}>
                     <Text style={styles.message}>Lembretes</Text>
                 </Animatable.View>
-                
+
+                <TouchableOpacity style={styles.addReminderButton} onPress={ () => navigation.navigate("Reminder")}>
+                    <FontAwesome6 name="circle-plus" size={24} color="black" />
+                </TouchableOpacity>                
             </View>
         </KeyboardAvoidingView>
     )
