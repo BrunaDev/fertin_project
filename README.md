@@ -2,6 +2,8 @@
   <img src="https://img.shields.io/static/v1?label=License&message=MIT&color=00bfff&style=plastic"/>
   
   <img src="https://img.shields.io/static/v1?label=LP&message=JavaScript&color=daa520&style=plastic"/>
+
+   <img src="https://img.shields.io/static/v1?label=FW&message=ReactNative&color=fd0080&style=plastic"/>
   
   <img src="https://img.shields.io/static/v1?label=IDE&message=VsCode&color=9acd32&style=plastic"/>
 </p>
