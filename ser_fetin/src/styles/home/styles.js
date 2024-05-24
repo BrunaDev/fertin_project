@@ -6,7 +6,8 @@ export const styles = StyleSheet.create({
       backgroundColor: '#fff',
     },
     containerHeader: {
-        marginTop: "6%",
+        marginTop: "6%",        
+        flex: 1,
     },    
     containerBody:{
       marginTop: '14%',
@@ -49,5 +50,13 @@ export const styles = StyleSheet.create({
     },
     buttonReturn: {
         marginLeft: 10,
+    },
+    addReminderButton: {
+      position: 'absolute',
+      right: 0,
+      bottom: 0,
+      zIndex: 1,
+      marginRight: 15,
+      marginBottom: 25
     }
 });

@@ -11,7 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { useNavigation } from '@react-navigation/native';
 
-export default function User(){
+export default function Notification(){
 
     const navigation = useNavigation();
 

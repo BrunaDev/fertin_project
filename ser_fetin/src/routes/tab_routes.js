@@ -12,7 +12,7 @@ export default function RoutesTab(){
     return(
         <Tab.Navigator screenOptions={{ headerShown: false }}>
                 <Tab.Screen
-                    name="Home"
+                    name="HomeReminder"
                     component={Home}
                     options={{
                         tabBarIcon: ({color, size}) => <FontAwesome6 name='list-alt' color={color} size={size}/>,

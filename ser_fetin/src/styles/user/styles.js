@@ -6,7 +6,7 @@ export const styles = StyleSheet.create({
       backgroundColor: '#fff',
     },
     containerHeader: {
-        marginTop: "6%",
+        marginTop: "10%",
     },    
     containerBody:{
       marginTop: '14%',
@@ -24,5 +24,8 @@ export const styles = StyleSheet.create({
       marginTop: '155%',
       marginRight: 25,
       alignItems: 'flex-end',
+    },
+    buttonReturn: {
+        marginLeft: 10,
     },
 });
