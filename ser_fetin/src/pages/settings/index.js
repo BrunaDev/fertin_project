@@ -3,7 +3,8 @@ import {
     Text,
     View,
     TouchableOpacity,
-    Platform
+    Platform,
+    Alert
 } from 'react-native';
 
 import { Feather, FontAwesome6, Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -12,12 +13,18 @@ import { styles } from '../../styles/settings/styles';
 import { useNavigation } from '@react-navigation/native';
 import * as Animatable from 'react-native-animatable';
 
+import { getAuth, signOut } from 'firebase/auth';
+
 export default function Settings(){
     const navigation = useNavigation();
+    const auth = getAuth();
 
-    async function logoutUser()
-    {
-        navigation.navigate('LoggedOut');
+    async function logoutUser() {
+        signOut(auth).then(() => {
+            navigation.navigate('LoggedOut');
+          }).catch((error) => {
+            Alert.alert('Algo deu errado, tente novamente mais tarde.', error.message);
+          });
     }
 
     return(

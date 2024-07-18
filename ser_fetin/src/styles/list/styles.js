@@ -2,37 +2,35 @@ import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
     container: {
-        marginStart: 5,
-        marginTop: 7,
-        marginBottom: 7,
+        marginBottom: 14,
+        flexDirection: 'row',
+        position: 'relative'
     },
     images: {
         width: '100%',
-        height: 150,
+        height: 100,
         borderRadius: 14,
+        zIndex: 1
     },
-    info:{
+    info: {
         position: 'absolute',
-        bottom: 14,
+        top: '20%',
         left: 14,
         zIndex: 99
     },
-    name:{
+    title: {
         fontSize: 18,
-        color: '#FFF',
-        fontWeight: 'bold'
+        color: "#000",
+        fontWeight: "bold",
     },
-    author:{
-        color: '#FFF'
+    time: {
+        color: "#000",
     },
-    gradient:{
+    deleteButton: {
         position: 'absolute',
-        left: 0,
-        right: 0,
-        bottom: 0,
-        height: '55%',
-        borderRadius: 14,
-        zIndex: 1,
-        backgroundColor: 'transparent'
-    }
+        top: '65%',
+        right: 10,
+        transform: [{ translateY: -25 }],
+        zIndex: 100,
+    },
 });

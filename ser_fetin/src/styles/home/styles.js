@@ -8,12 +8,12 @@ export const styles = StyleSheet.create({
     containerHeader: {
         marginTop: "6%",        
         flex: 1,
+        marginRight: 15,
+        marginLeft: 15
     },    
     containerBody:{
       marginTop: '14%',
       marginBottom: '8%',
-      paddingStart: '5%',
-      marginTop: '10%',
     },
     message:{
       fontSize: 28,
@@ -53,10 +53,8 @@ export const styles = StyleSheet.create({
     },
     addReminderButton: {
       position: 'absolute',
-      right: 0,
-      bottom: 0,
+      right: 15,
+      bottom: 25,
       zIndex: 1,
-      marginRight: 15,
-      marginBottom: 25
-    }
+    },
 });

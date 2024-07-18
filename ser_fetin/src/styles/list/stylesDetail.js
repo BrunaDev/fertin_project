@@ -2,37 +2,55 @@ import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
     container: {
-        marginStart: 5,
-        marginTop: 7,
-        marginBottom: 7,
+        flex: 1,
+        backgroundColor: '#fff',
+        padding: 20,
     },
-    images: {
+    button: {
+        backgroundColor: "#000",
         width: '100%',
-        height: 150,
-        borderRadius: 14,
+        borderRadius: 8,
+        paddingVertical: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 20,
     },
-    info:{
-        position: 'absolute',
-        bottom: 14,
-        left: 14,
-        zIndex: 99
-    },
-    name:{
+    buttonText: {
+        color: '#FFFF',
         fontSize: 18,
-        color: '#FFF',
         fontWeight: 'bold'
+    },     
+    input: {
+        borderWidth: 1,
+        borderColor: '#000',
+        marginBottom: 12,
+        padding: 10,
+        fontSize: 15,
+        color: 'black'
     },
-    author:{
-        color: '#FFF'
+    multilineInput: {        
+        textAlignVertical: 'top',
+        height: 100,
+        minHeight: 100,
+        maxHeight: 200,
     },
-    gradient:{
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        bottom: 0,
-        height: '55%',
-        borderRadius: 14,
-        zIndex: 1,
-        backgroundColor: 'transparent'
+    buttonDate: {
+        padding: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginHorizontal: 5,
+    },
+    dateTimeContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#000',
+        padding: 10,
+        marginVertical: 10,
+    },
+    editButtonText: {
+        fontWeight: 'bold',
+        color: 'blue',
     }
 });

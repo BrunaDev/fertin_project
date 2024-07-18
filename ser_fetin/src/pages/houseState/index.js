@@ -10,6 +10,7 @@ import { styles } from '../../styles/houseState/styles';
 
 import { useNavigation } from '@react-navigation/native';
 
+//TODO: Área que ficará a relação de verificação e tranca da porta
 export default function HouseState(){
 
     const navigation = useNavigation();

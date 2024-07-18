@@ -1,31 +1,62 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-    container: {
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  containerHeader: {
       flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
       backgroundColor: '#fff',
-    },
-    containerHeader: {
-        marginTop: "10%",
-    },    
-    containerBody:{
-      marginTop: '14%',
-      marginBottom: '8%',
-      paddingStart: '5%',
-      marginTop: '10%',
-    },
-    message:{
-      fontSize: 28,
-      fontWeight: 'bold',
-      color: '#000',
-    },
-    addReminderButton: {
-      paddingVertical: 8,
-      marginTop: '155%',
-      marginRight: 25,
-      alignItems: 'flex-end',
-    },
-    buttonReturn: {
-        marginLeft: 10,
-    },
+  },
+  input: {
+      borderWidth: 1,
+      borderColor: '#ccc',
+      borderRadius: 5,
+      padding: 10,
+      width: '80%',
+  },
+  buttonReturn: {
+    marginLeft: 10,
+    marginTop: "10%"
+  },
+  button: {
+      backgroundColor: '#000',
+      borderRadius: 5,
+      padding: 12,
+      width: '80%',
+      alignItems: 'center',
+      marginTop: 20
+  },
+  buttonText: {
+      color: '#fff',
+      fontSize: 16,
+  },
+  profileImage: {
+      width: 120,
+      height: 120,
+      borderRadius: 60,
+      marginBottom: 20,
+  },
+  addPhotoText: {
+      color: '#007bff',
+      fontSize: 16,
+  },
+  namePage: {
+    fontSize: 30,
+    marginBottom: 60,
+    fontWeight: 'bold'
+  },
+  passwordInputContainer: {
+      flexDirection: 'row',
+      position: 'relative',
+      alignItems: 'center',
+      marginTop: 20
+  },
+  passwordVisibilityToggle: {
+      position: 'absolute',
+      right: 10,
+  }
 });

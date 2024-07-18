@@ -15,7 +15,15 @@ import {
 } from 'expo-location';
 
 import { styles } from '../../styles/geo/styles';
+import firebase from 'firebase/app';
+import 'firebase/database';
 
+
+/* TODO: Salvar a localização que o usuário definiu como "home" no banco de dados
+para que toda vez que entrar não precisar definir novamente, só pegar no banco
+e se precisar atualizar, atualiza no banco de dados também.
+Criar uma função que permita fazer um cálculo que criar uma ação quando o usuário estiver
+a 10 metros da localização marcada como "home". */
 export default function Geolocalization(){
     const [location, setLocation] = useState(null);
     const [homeLocation, setHomeLocation] = useState(null);
@@ -64,7 +72,19 @@ export default function Geolocalization(){
         const { latitude, longitude } = event.nativeEvent.coordinate;
         setHomeLocation({ latitude, longitude });
         setIsFirstTime(false);
+    
+        firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({
+            homeLocation: {
+                latitude: latitude,
+                longitude: longitude
+            }
+        }).then(() => {
+            console.log('Localização da casa salva no Firebase');
+        }).catch((error) => {
+            console.error('Erro ao salvar localização da casa:', error);
+        });
     };
+    
 
     const handleMarkerPress = () => {
         setModalVisible(true);

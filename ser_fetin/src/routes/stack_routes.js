@@ -7,7 +7,9 @@ import Register from '../pages/register';
 import RoutesTab from './tab_routes';
 import Reminder from '../pages/addReminder';
 import Password from '../pages/updatePass';
-import Notification from '../pages/notification';
+import Notification from '../pages/notification/config';
+import Detail from "../pages/list/detail";
+import NewPassword from '../pages/updatePass/index.login';
 
 
 const Stack = createNativeStackNavigator();
@@ -54,6 +56,15 @@ export default function Routes(){
                 name="Password"
                 component={Password}
                 options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="NewPassword"
+                component={NewPassword}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Detail"
+                component={Detail}
             />
         </Stack.Navigator>
     )

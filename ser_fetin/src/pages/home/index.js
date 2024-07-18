@@ -1,41 +1,44 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     KeyboardAvoidingView,
     Text,
     View,
     TouchableOpacity,
     Platform,
-    SafeAreaView,
     BackHandler,
     Alert,
-    FlatList
+    FlatList,
+    Image
 } from 'react-native';
-
-import { FontAwesome6 } from '@expo/vector-icons';
-import { styles } from '../../styles/home/styles';
-import { useIsFocused } from '@react-navigation/native';
-
-import { useNavigation } from '@react-navigation/native';
 import * as Animatable from 'react-native-animatable';
+import { useIsFocused } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
-import {List} from '../list/index';
-import api from '../../services/api';
+import { styles } from '../../styles/home/styles';
+import { getDocs, collection, query, where } from 'firebase/firestore';
+import { db } from '../../services/firebase.config';
+import { getAuth } from 'firebase/auth';
 
-export default function Home(){
+import { List } from '../../components/index';
+
+const remindersCollectionRef = collection(db, 'reminders');
+const auth = getAuth();
+
+export default function Home() {
     const navigation = useNavigation();
     const isFocused = useIsFocused();
 
     const [reminders, setReminders] = useState([]);
 
-    useEffect(() => {        
+    useEffect(() => {
         const backAction = () => {
             Alert.alert('Opa!', 'Você tem certeza que deseja sair?', [
-            {
-                text: 'Cancelar',
-                onPress: () => null,
-                style: 'cancel',
-            },
-            {text: 'Sim', onPress: () => BackHandler.exitApp()},
+                {
+                    text: 'Cancelar',
+                    onPress: () => null,
+                    style: 'cancel',
+                },
+                { text: 'Sim', onPress: () => BackHandler.exitApp() },
             ]);
             return true;
         };
@@ -47,16 +50,31 @@ export default function Home(){
     }, [isFocused]);
 
     useEffect(() => {
-        async function fetchApi(){
-            const response = await api.get("/reminders");
-            setReminders(response.data);
-        }
-        fetchApi();
+        fetchReminders();
     }, []);
 
-    return(
-        <KeyboardAvoidingView 
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
+    const fetchReminders = async () => {
+        try {
+            const q = query(remindersCollectionRef, where('userId', '==', auth.currentUser.uid));
+            const querySnapshot = await getDocs(q);
+            
+            const remindersData = [];
+            querySnapshot.forEach((doc) => {
+                remindersData.push({ id: doc.id, ...doc.data() });
+            });
+            setReminders(remindersData);
+        } catch (error) {
+            console.error('Erro ao buscar documentos:', error);
+        }
+    };
+
+    const handleUpdateReminders = () => {
+        fetchReminders();
+    };
+
+    return (
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={styles.container}
         >
             <View style={styles.containerHeader}>
@@ -66,16 +84,21 @@ export default function Home(){
 
                 <FlatList
                     data={reminders}
-                    //renderItem={({item}) => <Item title={item.title} />}
-                    keyExtractor={item => String(item.id)}
-                    renderItem={ (item) => <List data={item} /> }
+                    keyExtractor={item => item.id}
+                    renderItem={({ item }) => <List data={item} onUpdateReminders={handleUpdateReminders} />}
                     showsVerticalScrollIndicator={false}
                 />
 
-                <TouchableOpacity style={styles.addReminderButton} onPress={ () => navigation.navigate("Reminder")}>
-                    <FontAwesome6 name="circle-plus" size={60} color="black" />
-                </TouchableOpacity>                
+                <TouchableOpacity
+                    style={styles.addReminderButton}
+                    onPress={() => navigation.navigate('Reminder', { onUpdateReminders: handleUpdateReminders })}
+                >
+                    <Image
+                        source={require('../../../assets/button-plus.png')}
+                        style={{ width: 60, height: 60 }}
+                    />
+                </TouchableOpacity>
             </View>
         </KeyboardAvoidingView>
-    )
+    );
 }

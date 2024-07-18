@@ -10,12 +10,12 @@ export const styles = StyleSheet.create({
     },    
     containerBody:{
       marginTop: '14%',
-      marginBottom: '8%',
+      marginBottom: '10%',
       paddingStart: '5%',
       marginTop: '10%',
     },
-    message:{
-      fontSize: 28,
+    message: {
+      fontSize: 36,
       fontWeight: 'bold',
       color: '#000',
     },
@@ -27,20 +27,25 @@ export const styles = StyleSheet.create({
     },    
     title: {
         fontSize: 20,
-        marginTop: 24,
-      },
+        marginTop: 15,
+    },
+    inputContainer: {
+        borderWidth: 2,
+        borderColor: '#000',
+        marginBottom: 12,
+        height: 52,
+        marginBottom: 25
+    },
     input: {
-      borderBottomWidth: 1,
       height: 40,
-      marginBottom: 12,
       fontSize: 16,
+      paddingHorizontal: 10,
     },
     button: {
       backgroundColor: "#000",
       width: '100%',
       borderRadius: 8,
       paddingVertical: 8,
-      marginTop: 14,
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -52,5 +57,15 @@ export const styles = StyleSheet.create({
     },
     buttonReturn: {
         marginLeft: 10,
+    },
+    
+    passwordInputContainer: {
+      flexDirection: 'row',
+      position: 'relative',
+      alignItems: 'center',
+    },
+    passwordVisibilityToggle: {
+        position: 'absolute',
+        right: 10,
     }
 });
