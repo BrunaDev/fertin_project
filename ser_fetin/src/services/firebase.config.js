@@ -1,8 +1,9 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp } from 'firebase/app';
+import { getDatabase, ref, set, get } from 'firebase/database';
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
+import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
     apiKey: "AIzaSyDP95_vDhVF-fOqk6pQt-YzokEyyJLiRkc",
@@ -11,7 +12,8 @@ const firebaseConfig = {
     storageBucket: "ser-sistema-de-seguranca-bf0ef.appspot.com",
     messagingSenderId: "234025768719",
     appId: "1:234025768719:web:cb23c199e70bd0d1efd07a",
-    measurementId: "G-VSRCJKG6XY"
+    measurementId: "G-VSRCJKG6XY",
+    databaseURL: "https://ser-sistema-de-seguranca-bf0ef-default-rtdb.firebaseio.com/"
 };
 
 // Inicializa o Firebase
@@ -25,7 +27,10 @@ const auth = initializeAuth(app, {
 // Inicializa o Firestore
 const db = getFirestore(app);
 
+// Inicializa o Realtime Database
+const database = getDatabase(app);
+
 // Inicializa o Storage
 const storage = getStorage(app);
 
-export { auth, app, db, storage };
+export { auth, db, database, storage };
