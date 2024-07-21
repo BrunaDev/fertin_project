@@ -17,7 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import { styles } from '../../styles/home/styles';
 import { getDocs, collection, query, where } from 'firebase/firestore';
 import { db } from '../../services/firebase.config';
-import { getAuth } from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 import { List } from '../../components/index';
 
@@ -29,6 +29,7 @@ export default function Home() {
     const isFocused = useIsFocused();
 
     const [reminders, setReminders] = useState([]);
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
         const backAction = () => {
@@ -50,12 +51,21 @@ export default function Home() {
     }, [isFocused]);
 
     useEffect(() => {
-        fetchReminders();
-    }, []);
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                setUser(user);
+                fetchReminders(user.uid);
+            } else {
+                navigation.navigate('Login');
+            }
+        });
 
-    const fetchReminders = async () => {
+        return () => unsubscribe();
+    }, [auth]);
+
+    const fetchReminders = async (userId) => {
         try {
-            const q = query(remindersCollectionRef, where('userId', '==', auth.currentUser.uid));
+            const q = query(remindersCollectionRef, where('userId', '==', userId));
             const querySnapshot = await getDocs(q);
             
             const remindersData = [];
@@ -69,7 +79,9 @@ export default function Home() {
     };
 
     const handleUpdateReminders = () => {
-        fetchReminders();
+        if (user) {
+            fetchReminders(user.uid);
+        }
     };
 
     return (

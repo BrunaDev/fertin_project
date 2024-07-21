@@ -6,7 +6,8 @@ import {
     TouchableOpacity,
     Platform,
     TextInput,
-    Alert
+    Alert,
+    LogBox
 } from 'react-native';
 import {
     Ionicons,
@@ -21,13 +22,9 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { styles } from '../../styles/addReminder/styles';
 import { db } from '../../services/firebase.config';
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDoc, doc } from "firebase/firestore";
 import { getAuth } from 'firebase/auth';
 
-//TODO: As notificações devem permitir que o usuário troque a data e a hora do disparo (no Detail)
-//ou seja, não pode ser fixa na criação, deve verificar direto no banco para saber quando disparar.
-//Podemos fazer em um arquivo separado, se necessário
-//Outra coisa da notificação é que ela deve seguir o som e a vibração definidas em src/pages/notification/config.js
 const remindersCollection = collection(db, "reminders");
 const auth = getAuth();
 
@@ -39,7 +36,7 @@ Notifications.setNotificationHandler({
     }),
 });
 
-async function registerForPushNotificationsAsync() {
+async function registerForPushNotificationsAsync(vibrationEnabled) {
     let token;
     if (Device.isDevice) {
         const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -49,33 +46,45 @@ async function registerForPushNotificationsAsync() {
             finalStatus = status;
         }
         if (finalStatus !== 'granted') {
-            alert('Falha ao obter o token de notificação push!');
+            Alert.alert('Falha ao obter o token de notificação push!');
             return;
         }
         token = (await Notifications.getExpoPushTokenAsync()).data;
     } else {
-        alert('Deve usar dispositivo físico para notificações push');
+        Alert.alert('Deve usar dispositivo físico para notificações push');
     }
 
     if (Platform.OS === 'android') {
         await Notifications.setNotificationChannelAsync('default', {
             name: 'default',
             importance: Notifications.AndroidImportance.MAX,
-            vibrationPattern: [0, 250, 250, 250],
+            vibrationPattern: vibrationEnabled ? [0, 250, 250, 250] : [],
             lightColor: '#FF231F7C',
         });
-    }
+    }    
 
     return token;
 }
 
-async function sendReminder(title, description, date, onUpdateReminders, navigation) {
-    const token = await registerForPushNotificationsAsync();
+async function sendReminder(title, description, date, navigation, onUpdateReminders) {
+    const userId = auth.currentUser.uid;
+    const userDoc = doc(db, "users", userId);
+    const userSnapshot = await getDoc(userDoc);
+    
+    if (!userSnapshot.exists()) {
+        Alert.alert('Erro ao obter configurações de notificação do usuário.');
+        return;
+    }
+
+    const userSettings = userSnapshot.data();
+    const { soundEnabled, vibrationEnabled } = userSettings;
+
+    const token = await registerForPushNotificationsAsync(vibrationEnabled);
     if (!token) return;
 
     const trigger = new Date(date).getTime() - new Date().getTime();
     if (trigger <= 0) {
-        alert('A data e hora selecionadas já passaram!');
+        Alert.alert('A data e hora selecionadas já passaram!');
         return;
     }
 
@@ -83,7 +92,9 @@ async function sendReminder(title, description, date, onUpdateReminders, navigat
         content: {
             title: title,
             body: description || 'Não esqueça do seu compromisso!',
-            data: { data: 'goes here' },
+            sound: soundEnabled ? 'default' : null,
+            vibrate: vibrationEnabled ? [0, 250, 250, 250] : null,
+            data: { data: 'goes here' }
         },
         trigger: { seconds: Math.ceil(trigger / 1000) },
     });
@@ -92,22 +103,25 @@ async function sendReminder(title, description, date, onUpdateReminders, navigat
         title,
         description,
         date,
-        userId: auth.currentUser.uid
+        userId,
+        soundEnabled,
+        vibrationEnabled
     };
 
     try {
         await addDoc(remindersCollection, reminder);
         onUpdateReminders();
-        alert('Lembrete salvo com sucesso!');
+        Alert.alert('Lembrete salvo com sucesso!');
         navigation.goBack();
     } catch (error) {
-        alert('Erro ao salvar o lembrete: ' + error.message);
+        Alert.alert('Erro ao salvar o lembrete: ' + error.message);
     }
 }
 
 export default function Reminder() {
     const navigation = useNavigation();
     const route = useRoute();
+    
     const onUpdateReminders = route.params?.onUpdateReminders;
 
     const [expoPushToken, setExpoPushToken] = useState('');
@@ -121,6 +135,10 @@ export default function Reminder() {
     const [description, setDescription] = useState('');
 
     useEffect(() => {
+        LogBox.ignoreLogs([
+            'Non-serializable values were found in the navigation state',
+        ]);
+
         registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
 
         notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
@@ -149,7 +167,13 @@ export default function Reminder() {
     };
 
     const handleSave = () => {
-        sendReminder(title, description, date, onUpdateReminders, navigation);
+        sendReminder(
+            title,
+            description,
+            date,
+            navigation,
+            onUpdateReminders
+        );
     };
 
     return (
