@@ -6,13 +6,24 @@ export const styles = StyleSheet.create({
       backgroundColor: '#fff',
     },
     containerHeader: {
-        marginTop: "6%",
-    },    
-    containerBody:{
+      marginTop: "10%",
+      marginLeft: 15
+    },
+    containerPage: {
+      flex: 2,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },  
+    containerBody: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 20,
+    },
+    namePage: {
       marginTop: '14%',
-      marginBottom: '8%',
-      paddingStart: '5%',
-      marginTop: '10%',
+      fontSize: 30,
+      fontWeight: 'bold',
+      color: '#000'
     },
     message:{
       fontSize: 28,
@@ -24,30 +35,24 @@ export const styles = StyleSheet.create({
       borderTopRightRadius: 25,
       paddingStart: '5%',
       paddingEnd: '5%'
-    },    
-    title: {
-        fontSize: 20,
-        marginTop: 24,
-      },
-    input: {
-      borderBottomWidth: 1,
-      height: 40,
-      marginBottom: 12,
-      fontSize: 16,
+    },
+    statusText: {
+      fontSize: 18,
+      marginBottom: 20,
     },
     button: {
-      paddingVertical: 8,
-      marginTop: '155%',
-      marginRight: 25,
-      alignItems: 'flex-end',
+        backgroundColor: 'black',
+        padding: 15,
+        borderRadius: 10,
     },
     buttonText: {
-      color: '#FFFF',
-      fontSize: 18,
-      margin: 5,
-      fontWeight: 'bold'
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold'
     },
-    buttonReturn: {
-        marginLeft: 10,
+    image: {
+      width: 200,
+      height: 200,
+      marginBottom: 20,
     }
 });
