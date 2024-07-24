@@ -38,18 +38,19 @@ const scheduleNotification = async (title, description, date, soundEnabled, vibr
         return null;
     }
 
-    const notificationId = await Notifications.scheduleNotificationAsync({
+    const newNotificationId = await Notifications.scheduleNotificationAsync({
         content: {
             title: title,
             body: description,
-            sound: soundEnabled ? 'default' : null,
+            sound: soundEnabled ? 'notification.wav' : null,
             vibrate: vibrationEnabled ? [0, 250, 250, 250] : null,
+            icon: Platform.OS === 'android' ? 'icon.png' : null,
             data: { data: 'goes here' }
         },
         trigger: { seconds: Math.ceil(trigger / 1000) },
     });
 
-    return notificationId;
+    return newNotificationId;
 };
 
 export default function Detail() {
@@ -89,12 +90,13 @@ export default function Detail() {
     const handleSave = async () => {
         const reminderId = route.params?.data.id;
         const oldNotificationId = route.params?.data.notificationId;
-
+    
         if (reminderId) {
             const reminderDocRef = doc(db, 'reminders', reminderId);
     
             try {
-                if (oldNotificationId) {
+                const trigger = new Date(date).getTime() - new Date().getTime();
+                if (trigger > 0 && oldNotificationId) {
                     await cancelScheduledNotification(oldNotificationId);
                 }
     
@@ -124,7 +126,7 @@ export default function Detail() {
             }
         }
         navigation.goBack();
-    };
+    };    
 
     return (
         <View style={styles.container}>

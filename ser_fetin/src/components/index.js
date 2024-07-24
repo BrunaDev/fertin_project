@@ -10,9 +10,11 @@ import { useNavigation } from '@react-navigation/native';
 import { doc, deleteDoc } from 'firebase/firestore';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { db } from '../services/firebase.config';
+import * as Notifications from 'expo-notifications';
 
 export function List({ data, onUpdateReminders }) {
     const navigation = useNavigation();
+    const notificationId = data.notificationId; // Certifique-se de que está pegando o notificationId corretamente
 
     const convertTimestampToDate = (timestamp) => {
         if (timestamp && timestamp.seconds) {
@@ -27,6 +29,9 @@ export function List({ data, onUpdateReminders }) {
 
     const handleDelete = async () => {
         try {
+            if (notificationId) {
+                await Notifications.cancelScheduledNotificationAsync(notificationId);
+            }
             await deleteDoc(doc(db, "reminders", data.id));
             onUpdateReminders();
         } catch (error) {
