@@ -14,7 +14,7 @@ import * as Notifications from 'expo-notifications';
 
 export function List({ data, onUpdateReminders }) {
     const navigation = useNavigation();
-    const notificationId = data.notificationId; // Certifique-se de que está pegando o notificationId corretamente
+    const notificationId = data.notificationId;
 
     const convertTimestampToDate = (timestamp) => {
         if (timestamp && timestamp.seconds) {
