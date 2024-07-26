@@ -114,7 +114,6 @@ export default function User() {
             const userRef = doc(db, 'users', auth.currentUser.uid);
             try {
                 await setDoc(userRef, { image: imageUri }, { merge: true });
-                console.log('URL da imagem salva no Firestore:', imageUri);
                 Alert.alert('Sucesso', 'Foto de perfil salva com sucesso.');
             } catch (error) {
                 console.error('Erro ao salvar a foto no Firestore:', error);
