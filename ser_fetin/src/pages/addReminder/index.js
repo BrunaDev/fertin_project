@@ -28,95 +28,92 @@ import { getAuth } from 'firebase/auth';
 const remindersCollection = collection(db, "reminders");
 const auth = getAuth();
 
-async function registerForPushNotificationsAsync() {
+async function registerForPushNotificationsAsync(selectedSound, vibrationEnabled) {
     let token;
     if (Device.isDevice) {
-      const { status: existingStatus } = await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-      if (existingStatus !== 'granted') {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-      }
-      if (finalStatus !== 'granted') {
-        Alert.alert('Falha ao obter o token de notificação push!');
-        return;
-      }
-      token = (await Notifications.getExpoPushTokenAsync()).data;
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+        if (existingStatus !== 'granted') {
+            const { status } = await Notifications.requestPermissionsAsync();
+            finalStatus = status;
+        }
+        if (finalStatus !== 'granted') {
+            Alert.alert('Falha ao obter o token de notificação push!');
+            return;
+        }
+        token = (await Notifications.getExpoPushTokenAsync()).data;
     } else {
-      Alert.alert('Deve usar dispositivo físico para notificações push');
+        Alert.alert('Deve usar dispositivo físico para notificações push');
     }
-  
+
     if (Platform.OS === 'android') {
-      Notifications.setNotificationChannelAsync('default', {
-        name: 'default',
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FF231F7C',
-        sound: 'notification.wav'
-      });
+        await Notifications.setNotificationChannelAsync('default', {
+            name: 'default',
+            importance: Notifications.AndroidImportance.MAX,
+            vibrationPattern: vibrationEnabled ? [0, 250, 250, 250] : [0],
+            lightColor: '#FF231F7C',
+            sound: selectedSound
+        });
     }
-  
+
     return token;
-}  
+}
 
 async function sendReminder(title, description, date, navigation, onUpdateReminders) {
     const userId = auth.currentUser.uid;
     const userDoc = doc(db, "users", userId);
     const userSnapshot = await getDoc(userDoc);
-    
+
     if (!userSnapshot.exists()) {
         Alert.alert('Erro ao obter configurações de notificação do usuário.');
         return;
     }
-  
+
     const userSettings = userSnapshot.data();
-    const { soundEnabled, vibrationEnabled } = userSettings;
-  
-    const token = await registerForPushNotificationsAsync();
+    const { selectedSound, vibrationEnabled } = userSettings;
+
+    const token = await registerForPushNotificationsAsync(selectedSound, vibrationEnabled);
     if (!token) return;
-  
+
     const trigger = new Date(date).getTime() - new Date().getTime();
     if (trigger <= 0) {
         Alert.alert('A data e hora selecionadas já passaram!');
         return;
     }
-  
+
     const q = query(remindersCollection, where('userId', '==', userId));
     const querySnapshot = await getDocs(q);
     const order = querySnapshot.size + 1;
-  
+
     const notificationId = await Notifications.scheduleNotificationAsync({
         content: {
             title: title,
             body: description || 'Não esqueça do seu compromisso!',
-            sound: soundEnabled ? 'notification.wav' : null,
-            vibrate: vibrationEnabled ? [0, 250, 250, 250] : null,
+            sound: selectedSound,
+            vibrate: vibrationEnabled ? [0, 250, 250, 250] : [0],
+            icon: Platform.OS === 'android' ? 'icon.png' : null,
             data: { data: 'goes here' }
         },
         trigger: { seconds: Math.ceil(trigger / 1000) },
-    });      
-  
+    });
+
     const reminder = {
         title,
         description,
         date,
         userId,
-        soundEnabled,
-        vibrationEnabled,
         notificationId,
-        order
+        order,
     };
-  
-    try {
-        await addDoc(remindersCollection, reminder);
-        onUpdateReminders();
-        Alert.alert('Lembrete salvo com sucesso!');
-        navigation.goBack();
-    } catch (error) {
-        Alert.alert('Erro ao salvar o lembrete: ' + error.message);
-    }
-}  
 
+    await addDoc(remindersCollection, reminder);
+    Alert.alert('Lembrete criado com sucesso!');
+    navigation.goBack();
+
+    if (onUpdateReminders) {
+        onUpdateReminders(reminder);
+    }
+}
 
 export default function Reminder() {
     const navigation = useNavigation();
@@ -135,21 +132,36 @@ export default function Reminder() {
     const [description, setDescription] = useState('');
 
     useEffect(() => {
-        registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
-
+        const fetchSettingsAndRegister = async () => {
+            const userId = auth.currentUser.uid;
+            const userDoc = doc(db, "users", userId);
+            const userSnapshot = await getDoc(userDoc);
+    
+            if (userSnapshot.exists()) {
+                const userSettings = userSnapshot.data();
+                const { soundEnabled, vibrationEnabled } = userSettings;
+    
+                await registerForPushNotificationsAsync(soundEnabled, vibrationEnabled).then(token => setExpoPushToken(token));
+            } else {
+                Alert.alert('Erro ao obter configurações de notificação do usuário.');
+            }
+        };
+    
+        fetchSettingsAndRegister();
+    
         notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
             setNotification(notification);
         });
-
+    
         responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
             console.log(response);
         });
-
+    
         return () => {
             Notifications.removeNotificationSubscription(notificationListener.current);
             Notifications.removeNotificationSubscription(responseListener.current);
         };
-    }, []);
+    }, []);   
 
     const onChange = (event, selectedDate) => {
         const currentDate = selectedDate || date;

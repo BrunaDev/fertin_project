@@ -33,8 +33,14 @@
         {
           "icon": "./assets/icon.png",
           "color": "#ffffff",
-          "defaultChannel": "default",
-          "sounds": ["./assets/sounds/notification.wav"]
+          "sounds": [
+            "./assets/sounds/notification.wav",
+            "./assets/sounds/level-up.wav",
+            "./assets/sounds/message-incoming.wav",
+            "./assets/sounds/message-notification.wav",
+            "./assets/sounds/phone-notification.wav",
+            "./assets/sounds/simple-notification.wav"
+          ]
         }
       ],
       [
@@ -42,7 +48,8 @@
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "ios": {
       "supportsTablet": true,

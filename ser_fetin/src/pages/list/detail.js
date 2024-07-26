@@ -5,7 +5,8 @@ import {
     TextInput,
     TouchableOpacity,
     Platform,
-    Alert
+    Alert,
+    LogBox
 } from 'react-native';
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { styles } from '../../styles/list/stylesDetail';
@@ -30,7 +31,7 @@ const cancelScheduledNotification = async (notificationId) => {
     }
 };
 
-const scheduleNotification = async (title, description, date, soundEnabled, vibrationEnabled) => {
+const scheduleNotification = async (title, description, date, selectedSound, vibrationEnabled) => {
     const trigger = new Date(date).getTime() - new Date().getTime();
 
     if (trigger <= 0) {
@@ -42,8 +43,8 @@ const scheduleNotification = async (title, description, date, soundEnabled, vibr
         content: {
             title: title,
             body: description,
-            sound: soundEnabled ? 'notification.wav' : null,
-            vibrate: vibrationEnabled ? [0, 250, 250, 250] : null,
+            sound: selectedSound,
+            vibrate: vibrationEnabled ? [0, 250, 250, 250] : [0],
             icon: Platform.OS === 'android' ? 'icon.png' : null,
             data: { data: 'goes here' }
         },
@@ -67,7 +68,7 @@ export default function Detail() {
     const [mode, setMode] = useState('date');
 
     const [isEditing, setIsEditing] = useState(false);
-    const [soundEnabled, setSoundEnabled] = useState(route.params?.data.soundEnabled || false);
+    const [selectedSound, setSelectedSound] = useState(route.params?.data.selectedSound || false);
     const [vibrationEnabled, setVibrationEnabled] = useState(route.params?.data.vibrationEnabled || false);
 
     useLayoutEffect(() => {
@@ -87,6 +88,10 @@ export default function Detail() {
         setMode(currentMode);
     };
 
+    LogBox.ignoreLogs([
+        'Non-serializable values were found in the navigation state',
+    ]);
+
     const handleSave = async () => {
         const reminderId = route.params?.data.id;
         const oldNotificationId = route.params?.data.notificationId;
@@ -104,7 +109,7 @@ export default function Detail() {
                     title,
                     description,
                     date,
-                    soundEnabled,
+                    selectedSound,
                     vibrationEnabled
                 );
     
@@ -114,7 +119,7 @@ export default function Detail() {
                         description: description,
                         date: date,
                         notificationId: newNotificationId,
-                        soundEnabled,
+                        selectedSound,
                         vibrationEnabled,
                     });
                     onUpdateReminders();

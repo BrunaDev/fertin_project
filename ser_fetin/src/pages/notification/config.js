@@ -4,23 +4,23 @@ import {
     Text,
     View,
     TouchableOpacity,
-    Switch,
     Alert,
     Platform
 } from 'react-native';
-
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { styles } from '../../styles/notification/styles';
 import { getAuth } from 'firebase/auth';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../services/firebase.config';
+import {Picker} from '@react-native-picker/picker';
+import { Switch } from 'react-native-gesture-handler';
 
 export default function NotificationSettings() {
     const navigation = useNavigation();
     const auth = getAuth();
 
-    const [soundEnabled, setSoundEnabled] = useState(true);
+    const [selectedSound, setSelectedSound] = useState('notification.wav');
     const [vibrationEnabled, setVibrationEnabled] = useState(true);
 
     useEffect(() => {
@@ -31,7 +31,7 @@ export default function NotificationSettings() {
 
             if (userSnapshot.exists()) {
                 const userSettings = userSnapshot.data();
-                setSoundEnabled(userSettings.soundEnabled);
+                setSelectedSound(userSettings.selectedSound || 'notification.wav');
                 setVibrationEnabled(userSettings.vibrationEnabled);
             }
         };
@@ -45,7 +45,7 @@ export default function NotificationSettings() {
 
         try {
             await updateDoc(userDoc, {
-                soundEnabled,
+                selectedSound,
                 vibrationEnabled,
             });
             Alert.alert('Configurações salvas com sucesso!');
@@ -59,7 +59,7 @@ export default function NotificationSettings() {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={styles.container}
         >
-            <TouchableOpacity style={styles.buttonReturn} onPress={ () => navigation.goBack()}>
+            <TouchableOpacity style={styles.buttonReturn} onPress={() => navigation.goBack()}>
                 <Ionicons name="return-up-back" size={30} color="black" />
             </TouchableOpacity>
             
@@ -68,13 +68,18 @@ export default function NotificationSettings() {
 
                 <View style={styles.optionContainer}>
                     <Text style={styles.optionText}>Som</Text>
-                    <Switch
-                        trackColor={{ false: "#767577", true: "#767577" }}
-                        thumbColor={soundEnabled ? "#4bf588" : "#f4f3f4"}
-                        ios_backgroundColor="#3e3e3e"
-                        onValueChange={(value) => setSoundEnabled(value)}
-                        value={soundEnabled}
-                    />
+                    <Picker
+                        selectedValue={selectedSound}
+                        style={{ height: 50, width: 150 }}
+                        onValueChange={(itemValue) => setSelectedSound(itemValue)}
+                    >
+                        <Picker.Item label="Som de Notificação Padrão" value="notification.wav" />
+                        <Picker.Item label="Som de Nível Up" value="level-up.wav" />
+                        <Picker.Item label="Som de Mensagem Recebida" value="message-incoming.wav" />
+                        <Picker.Item label="Som de Notificação de Mensagem" value="message-notification.wav" />
+                        <Picker.Item label="Som de Notificação de Ligação" value="phone-notification.wav" />
+                        <Picker.Item label="Som de Notificação Simples" value="simple-notification.wav" />
+                    </Picker>
                 </View>
 
                 <View style={styles.optionContainer}>
