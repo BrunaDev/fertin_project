@@ -1,5 +1,5 @@
 <p>
-  <img src="https://img.shields.io/static/v1?label=License&message=MIT&color=00bfff&style=plastic"/>
+  <img src="https://img.shields.io/static/v1?label=License&message=Custom&color=00bfff&style=plastic"/>
   
   <img src="https://img.shields.io/static/v1?label=LP&message=JavaScript&color=daa520&style=plastic"/>
 
