@@ -8,6 +8,7 @@
   <img src="https://img.shields.io/static/v1?label=IDE&message=VsCode&color=9acd32&style=plastic"/>
 </p>
 
+> Seção em Português
 # SER - Sistema de Segurança Remota/Residencial
 
 ## Visão Geral
@@ -37,6 +38,45 @@ Passos para configurar o projeto localmente:
    ```bash
    npm install
 5. Inicie a aplicação:
+   ```bash
+   npx expo start
+
+<p align="center">
+<img src="http://img.shields.io/static/v1?label=STATUS&message=EM%20DESENVOLVIMENTO&color=GREEN&style=for-the-badge"/>
+</p>
+
+---
+
+> Section in English
+# SER - Remote/Residential Security System
+
+## Overview
+SER is a remote security application that provides users with a comprehensive solution to ensure safety and peace of mind in their homes. Users can sign up on the platform and set up custom reminders to activate security systems when leaving the house. By integrating with smart lock systems, the app enables remote control of doors, adding an extra layer of security. Additionally, SER uses geolocation to monitor user movements and send visual and/or audible notifications about the status of the home. With an intuitive interface, the app offers a simple and effective experience to ensure home security and provide users with peace of mind.
+
+## Features
+- **Reminder Creation:** Allows users to create and manage reminders for various tasks.
+- **Lock Status Check:** Checks the current status of the home lock.
+- **Remote Lock Control:** Enables locking or unlocking the door remotely.
+  
+## Requirements
+**Expo Go:** Ensure you have Expo Go installed on your device (phone) to test the application.
+
+## Installation
+Steps to set up the project locally:
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/BrunaDev/fertin_project
+2. Navigate to the project directory:
+   ```bash
+   cd fetin_project
+3. Open the project in your preferred IDE:
+   ```bash
+   code .
+4. Install the necessary dependencies:
+   ```bash
+   npm install
+5. Start the application:
    ```bash
    npx expo start
 
