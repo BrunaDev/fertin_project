@@ -12,7 +12,7 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { db } from '../services/firebase.config';
 import * as Notifications from 'expo-notifications';
 
-export function List({ data, onUpdateReminders }) {
+export function List({ data, onUpdateReminders, onLongPress, isActive }) {
     const navigation = useNavigation();
     const notificationId = data.notificationId;
 
@@ -40,7 +40,12 @@ export function List({ data, onUpdateReminders }) {
     };
 
     return (
-        <TouchableOpacity style={styles.container} onPress={handleNavigate}>
+        <TouchableOpacity
+            onLongPress={onLongPress}
+            disabled={isActive}
+            style={[styles.container, isActive && { backgroundColor: '#f0f0f0' }]}
+            onPress={handleNavigate}
+        >
             <Image
                 source={require('../../assets/background-list.png')}
                 style={styles.images}

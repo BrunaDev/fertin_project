@@ -7,7 +7,6 @@ import {
     Platform,
     BackHandler,
     Alert,
-    FlatList,
     Image
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
@@ -15,11 +14,13 @@ import { useIsFocused } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 
 import { styles } from '../../styles/home/styles';
-import { getDocs, collection, query, where } from 'firebase/firestore';
+import { getDocs, collection, query, where, orderBy, writeBatch, doc } from 'firebase/firestore';
 import { db } from '../../services/firebase.config';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 import { List } from '../../components/index';
+import DraggableFlatList from 'react-native-draggable-flatlist';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const remindersCollectionRef = collection(db, 'reminders');
 const auth = getAuth();
@@ -65,9 +66,9 @@ export default function Home() {
 
     const fetchReminders = async (userId) => {
         try {
-            const q = query(remindersCollectionRef, where('userId', '==', userId));
+            const q = query(remindersCollectionRef, where('userId', '==', userId), orderBy('order', 'asc'));
             const querySnapshot = await getDocs(q);
-            
+    
             const remindersData = [];
             querySnapshot.forEach((doc) => {
                 remindersData.push({ id: doc.id, ...doc.data() });
@@ -84,33 +85,52 @@ export default function Home() {
         }
     };
 
+    const saveNewOrder = async (data) => {
+        const batch = writeBatch(db);
+        data.forEach((item, index) => {
+            const reminderRef = doc(db, 'reminders', item.id);
+            batch.update(reminderRef, { order: index });
+        });
+        await batch.commit();
+    };
+
+    const renderItem = ({ item, drag, isActive }) => (
+        <List data={item} onUpdateReminders={handleUpdateReminders} onLongPress={drag} isActive={isActive} />
+    );
+
     return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={styles.container}
-        >
-            <View style={styles.containerHeader}>
-                <Animatable.View animation="fadeInLeft" delay={500} style={styles.containerBody}>
-                    <Text style={styles.message}>Lembretes</Text>
-                </Animatable.View>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={styles.container}
+            >
+                <View style={styles.containerHeader}>
+                    <Animatable.View animation="fadeInLeft" delay={500} style={styles.containerBody}>
+                        <Text style={styles.message}>Lembretes</Text>
+                    </Animatable.View>
 
-                <FlatList
-                    data={reminders}
-                    keyExtractor={item => item.id}
-                    renderItem={({ item }) => <List data={item} onUpdateReminders={handleUpdateReminders} />}
-                    showsVerticalScrollIndicator={false}
-                />
-
-                <TouchableOpacity
-                    style={styles.addReminderButton}
-                    onPress={() => navigation.navigate('Reminder', { onUpdateReminders: handleUpdateReminders })}
-                >
-                    <Image
-                        source={require('../../../assets/button-plus.png')}
-                        style={{ width: 60, height: 60 }}
+                    <DraggableFlatList
+                        data={reminders}
+                        keyExtractor={(item) => item.id}
+                        renderItem={renderItem}
+                        onDragEnd={({ data }) => {
+                            setReminders(data);
+                            saveNewOrder(data);
+                        }}
+                        showsVerticalScrollIndicator={false}
                     />
-                </TouchableOpacity>
-            </View>
-        </KeyboardAvoidingView>
+
+                    <TouchableOpacity
+                        style={styles.addReminderButton}
+                        onPress={() => navigation.navigate('Reminder', { onUpdateReminders: handleUpdateReminders })}
+                    >
+                        <Image
+                            source={require('../../../assets/button-plus.png')}
+                            style={{ width: 60, height: 60 }}
+                        />
+                    </TouchableOpacity>
+                </View>
+            </KeyboardAvoidingView>
+        </GestureHandlerRootView>
     );
 }

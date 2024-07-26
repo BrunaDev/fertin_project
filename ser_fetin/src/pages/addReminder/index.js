@@ -22,49 +22,42 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { styles } from '../../styles/addReminder/styles';
 import { db } from '../../services/firebase.config';
-import { collection, addDoc, getDoc, doc } from "firebase/firestore";
+import { collection, addDoc, getDoc, doc, getDocs, query, where } from "firebase/firestore";
 import { getAuth } from 'firebase/auth';
 
 const remindersCollection = collection(db, "reminders");
 const auth = getAuth();
 
-Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: false,
-    }),
-});
-
-async function registerForPushNotificationsAsync(vibrationEnabled) {
+async function registerForPushNotificationsAsync() {
     let token;
     if (Device.isDevice) {
-        const { status: existingStatus } = await Notifications.getPermissionsAsync();
-        let finalStatus = existingStatus;
-        if (existingStatus !== 'granted') {
-            const { status } = await Notifications.requestPermissionsAsync();
-            finalStatus = status;
-        }
-        if (finalStatus !== 'granted') {
-            Alert.alert('Falha ao obter o token de notificação push!');
-            return;
-        }
-        token = (await Notifications.getExpoPushTokenAsync()).data;
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        Alert.alert('Falha ao obter o token de notificação push!');
+        return;
+      }
+      token = (await Notifications.getExpoPushTokenAsync()).data;
     } else {
-        Alert.alert('Deve usar dispositivo físico para notificações push');
+      Alert.alert('Deve usar dispositivo físico para notificações push');
     }
-
+  
     if (Platform.OS === 'android') {
-        await Notifications.setNotificationChannelAsync('default', {
-            name: 'default',
-            importance: Notifications.AndroidImportance.MAX,
-            vibrationPattern: vibrationEnabled ? [0, 250, 250, 250] : [],
-            lightColor: '#FF231F7C',
-        });
-    }    
-
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+        sound: 'notification.wav'
+      });
+    }
+  
     return token;
-}
+}  
 
 async function sendReminder(title, description, date, navigation, onUpdateReminders) {
     const userId = auth.currentUser.uid;
@@ -75,39 +68,45 @@ async function sendReminder(title, description, date, navigation, onUpdateRemind
         Alert.alert('Erro ao obter configurações de notificação do usuário.');
         return;
     }
-
+  
     const userSettings = userSnapshot.data();
     const { soundEnabled, vibrationEnabled } = userSettings;
-
-    const token = await registerForPushNotificationsAsync(vibrationEnabled);
+  
+    const token = await registerForPushNotificationsAsync();
     if (!token) return;
-
+  
     const trigger = new Date(date).getTime() - new Date().getTime();
     if (trigger <= 0) {
         Alert.alert('A data e hora selecionadas já passaram!');
         return;
     }
-
-    await Notifications.scheduleNotificationAsync({
+  
+    const q = query(remindersCollection, where('userId', '==', userId));
+    const querySnapshot = await getDocs(q);
+    const order = querySnapshot.size + 1;
+  
+    const notificationId = await Notifications.scheduleNotificationAsync({
         content: {
             title: title,
             body: description || 'Não esqueça do seu compromisso!',
-            sound: soundEnabled ? 'default' : null,
+            sound: soundEnabled ? 'notification.wav' : null,
             vibrate: vibrationEnabled ? [0, 250, 250, 250] : null,
             data: { data: 'goes here' }
         },
         trigger: { seconds: Math.ceil(trigger / 1000) },
-    });
-
+    });      
+  
     const reminder = {
         title,
         description,
         date,
         userId,
         soundEnabled,
-        vibrationEnabled
+        vibrationEnabled,
+        notificationId,
+        order
     };
-
+  
     try {
         await addDoc(remindersCollection, reminder);
         onUpdateReminders();
@@ -116,7 +115,8 @@ async function sendReminder(title, description, date, navigation, onUpdateRemind
     } catch (error) {
         Alert.alert('Erro ao salvar o lembrete: ' + error.message);
     }
-}
+}  
+
 
 export default function Reminder() {
     const navigation = useNavigation();
@@ -135,10 +135,6 @@ export default function Reminder() {
     const [description, setDescription] = useState('');
 
     useEffect(() => {
-        LogBox.ignoreLogs([
-            'Non-serializable values were found in the navigation state',
-        ]);
-
         registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
 
         notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
@@ -175,6 +171,10 @@ export default function Reminder() {
             onUpdateReminders
         );
     };
+    
+    LogBox.ignoreLogs([
+        'Non-serializable values were found in the navigation state',
+    ]);
 
     return (
         <KeyboardAvoidingView 
