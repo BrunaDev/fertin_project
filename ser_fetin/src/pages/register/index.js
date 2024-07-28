@@ -6,6 +6,7 @@ import {
     KeyboardAvoidingView,
     Platform,
     View,
+    Alert,
     ActivityIndicator
 } from 'react-native';
 
@@ -16,8 +17,9 @@ import * as Animatable from 'react-native-animatable';
 import { useNavigation } from '@react-navigation/native';
 
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { app } from '../../services/firebase.config';
 
-export default function Register(){
+export default function Register() {
     const navigation = useNavigation();
     const [user, setUser] = useState('');
     const [password, setPassword] = useState('');
@@ -28,24 +30,39 @@ export default function Register(){
         setLoading(true);
         try {
             const auth = getAuth(app);
+            if (!user || !password) {
+                throw new Error("Email e senha são obrigatórios.");
+            }
+            if (!/\S+@\S+\.\S+/.test(user)) {
+                throw new Error("Formato de email inválido.");
+            }
             await createUserWithEmailAndPassword(auth, user, password);
             await signInWithEmailAndPassword(auth, user, password);
             setLoading(false);
             navigation.navigate('Home');
-            return;
         } catch (error) {
             setLoading(false);
-            Alert.alert("Não foi possível criar o usuário.", "Tente novamente mais tarde")
+            let errorMessage = "Não foi possível criar o usuário. Tente novamente mais tarde.";
+            if (error.code === 'auth/email-already-in-use') {
+                errorMessage = "Este email já está em uso.";
+            } else if (error.code === 'auth/invalid-email') {
+                errorMessage = "Email inválido.";
+            } else if (error.code === 'auth/weak-password') {
+                errorMessage = "A senha deve ter pelo menos 6 caracteres.";
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+            Alert.alert(errorMessage);
         }
     }
 
-    return(
+    return (
         <KeyboardAvoidingView 
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={styles.container}
         >
             <View style={styles.containerHeader}>
-                <TouchableOpacity style={styles.buttonReturn} onPress={ () => navigation.navigate("LoggedOut")}>
+                <TouchableOpacity style={styles.buttonReturn} onPress={() => navigation.navigate("LoggedOut")}>
                     <Ionicons name="return-up-back" size={30} color="black" />
                 </TouchableOpacity>
 
@@ -57,18 +74,18 @@ export default function Register(){
 
                     <View style={styles.inputContainer}>
                         <TextInput
-                        placeholder='Digite seu usuário...'
-                        style={styles.input}
-                        onChangeText={text => setUser(text)}
+                            placeholder='Digite seu usuário...'
+                            style={styles.input}
+                            onChangeText={text => setUser(text)}
                         />
                     </View>
 
                     <View style={[styles.inputContainer, styles.passwordInputContainer]}>
                         <TextInput
-                        secureTextEntry={!showPassword}
-                        placeholder='Digite sua senha...'
-                        style={styles.input}
-                        onChangeText={text => setPassword(text)}
+                            secureTextEntry={!showPassword}
+                            placeholder='Digite sua senha...'
+                            style={styles.input}
+                            onChangeText={text => setPassword(text)}
                         />
                         <TouchableOpacity
                             style={styles.passwordVisibilityToggle}
@@ -82,8 +99,8 @@ export default function Register(){
                         </TouchableOpacity>
                     </View>
 
-                    <TouchableOpacity style={styles.button} onPress={ () => sendForm()}>
-                    {loading ? (
+                    <TouchableOpacity style={styles.button} onPress={() => sendForm()}>
+                        {loading ? (
                             <ActivityIndicator
                                 size={'small'}
                                 color={'white'}
