@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import * as Notifications from 'expo-notifications';
 
 import Routes from './src/routes/stack_routes';
+import { LockProvider } from "./src/components/context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 Notifications.setNotificationHandler({
@@ -17,10 +18,12 @@ Notifications.setNotificationHandler({
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-    <NavigationContainer>
-      <StatusBar backgroundColor="transparent" translucent={true} barStyle="dark-content" />
-      <Routes/>
-    </NavigationContainer>
+      <LockProvider>
+        <NavigationContainer>
+          <StatusBar backgroundColor="transparent" translucent={true} barStyle="dark-content" />
+          <Routes/>
+        </NavigationContainer>
+    </LockProvider>
     </GestureHandlerRootView>
   );
 }

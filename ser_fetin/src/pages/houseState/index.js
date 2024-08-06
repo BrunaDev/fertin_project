@@ -1,24 +1,15 @@
-import {
-    KeyboardAvoidingView,
-    Text,
-    View,
-    TouchableOpacity,
-    Platform,
-    Image
-} from 'react-native';
+import React, { useContext } from 'react';
+import { KeyboardAvoidingView, Text, View, TouchableOpacity, Platform, Image } from 'react-native';
 import { styles } from '../../styles/houseState/styles';
 import { useNavigation } from '@react-navigation/native';
 import * as Animatable from 'react-native-animatable';
-import { useState } from 'react';
+import { LockContext } from '../../components/context';
 
-//TODO: precisamos da conectividade com a tranca para prosseguir.
+// TODO: fazer conexão com o hardware para saber o real estado da porta
+// TODO: precisa ser um vai e vem, vai comandos e vem leituras de estado
 export default function HouseState() {
-    const [isLocked, setIsLocked] = useState(false);
+    const { isLocked, toggleLockState } = useContext(LockContext);
     const navigation = useNavigation();
-
-    const toggleLockState = () => {
-        setIsLocked(!isLocked);
-    };
 
     return (
         <KeyboardAvoidingView 
