@@ -12,7 +12,7 @@ import { styles } from '../../styles/geo/styles';
 import { ref, set, get } from 'firebase/database';
 import { database } from '../../services/firebase.config';
 import * as Notifications from 'expo-notifications';
-import { LockContext } from '../../components/context';
+import { LockContext } from '../houseState/LockContext';
 
 const haversineDistance = (coords1, coords2) => {
     const toRad = (value) => (value * Math.PI) / 180;
