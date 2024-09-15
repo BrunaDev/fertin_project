@@ -3,8 +3,8 @@ import axios from 'axios';
 
 export const LockContext = createContext();
 
-// IP do NodeMCU
-const path = '192.168.43.11';
+// IP do NodeMCU - alterar
+const path = '192.168.240.89';
 
 export const LockProvider = ({ children }) => {
   const [isLocked, setIsLocked] = useState('');
@@ -17,6 +17,19 @@ export const LockProvider = ({ children }) => {
       setIsLocked(response.data);
     } catch (error) {
       console.error('Erro ao conectar com o NodeMCU:', error);
+    }
+  };
+
+   const getLockState = async () => {
+    try {
+      console.log('Iniciando a requisição para o estado da porta...');
+      const response = await axios.get(`http://${path}/status`);
+      console.log('Resposta recebida do NodeMCU (estado da porta):', response.data);
+
+      // Atualiza o estado baseado na resposta do NodeMCU
+      setIsLocked(response.data === 'Porta Trancada');
+    } catch (error) {
+      console.error('Erro ao buscar o estado da porta:', error);
     }
   };
 
@@ -38,6 +51,11 @@ export const LockProvider = ({ children }) => {
   useEffect(() => {
     fetchLockState();
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(getLockState, 300000);
+    return () => clearInterval(interval);
+  }, []);  
 
   return (
     <LockContext.Provider value={{ isLocked, toggleLockState }}>
