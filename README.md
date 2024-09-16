@@ -14,7 +14,8 @@
 ---
 
 > Seção em Português
-# SER - Segurança Remota
+
+## SER - Segurança Remota
 
 ## Visão Geral
 SER é um aplicativo de segurança remota que oferece aos usuários uma solução abrangente para garantir a segurança e tranquilidade em suas residências. Os usuários podem cadastrar-se na plataforma, ativando lembretes personalizados para ativar os sistemas de segurança ao sair de casa. Integrando-se com sistemas de fechaduras inteligentes, o aplicativo permite o controle remoto das portas, oferecendo uma camada adicional de segurança. Além disso, o SER utiliza a geolocalização para monitorar a movimentação dos usuários e enviar notificações visuais e/ou auditivas, informando o estado da casa. Com uma interface intuitiva, o aplicativo proporciona uma experiência simples e eficaz para garantir a segurança do lar, oferecendo paz de espírito aos usuários.
@@ -53,7 +54,8 @@ Passos para configurar o projeto localmente:
 ---
 
 > Section in English
-# SER - Remote Security
+
+## SER - Remote Security
 
 ## Overview
 SER is a remote security application that provides users with a comprehensive solution to ensure safety and peace of mind in their homes. Users can sign up on the platform and set up custom reminders to activate security systems when leaving the house. By integrating with smart lock systems, the app enables remote control of doors, adding an extra layer of security. Additionally, SER uses geolocation to monitor user movements and send visual and/or audible notifications about the status of the home. With an intuitive interface, the app offers a simple and effective experience to ensure home security and provide users with peace of mind.
