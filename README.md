@@ -8,8 +8,8 @@
   <img src="https://img.shields.io/static/v1?label=IDE&message=VsCode&color=9acd32&style=plastic"/>
 </p>
 
-- [Documentação em Português](#ser-seguranca-remota)
-- [Documentation in English](#ser-remote-security)
+- [Seção em Português](>sSecao-em-portugues)
+- [Section in English](>section-in-english)
 
 ---
 
