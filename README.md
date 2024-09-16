@@ -9,7 +9,7 @@
 </p>
 
 - [Documentação em Português](#SER-Segurança-Remota)
-- [Documentation in English](>section-in-english)
+- [Documentation in English](#SER-Remote-Security)
 
 ---
 
