@@ -3,8 +3,7 @@ import axios from 'axios';
 
 export const LockContext = createContext();
 
-// IP do NodeMCU - alterar
-const path = '192.168.240.89';
+const path = '192.168.35.89';
 
 export const LockProvider = ({ children }) => {
   const [isLocked, setIsLocked] = useState('');
@@ -26,23 +25,31 @@ export const LockProvider = ({ children }) => {
       const response = await axios.get(`http://${path}/status`);
       console.log('Resposta recebida do NodeMCU (estado da porta):', response.data);
 
-      // Atualiza o estado baseado na resposta do NodeMCU
       setIsLocked(response.data === 'Porta Trancada');
     } catch (error) {
       console.error('Erro ao buscar o estado da porta:', error);
     }
   };
 
+  const extractSensorPort = (response) => {
+    if (response === 'Porta Trancada') {
+      return '1';
+    } else if (response === 'Porta Destrancada') {
+      return '0';
+    }
+    return null;
+  };
+
   const toggleLockState = async () => {
     try {
       console.log('Enviando solicitação para alternar o estado da tranca...');
-      const response = await axios.post(`http://${path}/toggle`); // Substitua pelo endpoint correto
+      const response = await axios.post(`http://${path}/toggle`);
       console.log('Resposta após alternar o estado da tranca:', response.data);
   
       const sensorPort = extractSensorPort(response.data);
       console.log('Valor da porta do sensor após alternância:', sensorPort);
   
-      setIsLocked(sensorPort === '1'); // Atualiza o estado após a alternância
+      setIsLocked(sensorPort === '1');
     } catch (error) {
       console.error('Erro ao alternar o estado da tranca:', error);
     }
