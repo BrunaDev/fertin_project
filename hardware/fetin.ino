@@ -4,7 +4,6 @@
 // Motor DC
 int motor1Pin1 = 12; 
 int motor1Pin2 = 14; 
-int enable1Pin = 13; 
 
 // 0 para porta aberta, 1 para porta fechada
 bool porta_status = false; // define o status inicial como aberta
@@ -20,7 +19,6 @@ void setup() {
   // Define os pinos do motor como saídas
   pinMode(motor1Pin1, OUTPUT);
   pinMode(motor1Pin2, OUTPUT);
-  pinMode(enable1Pin, OUTPUT);
 
   Serial.begin(115200);
   delay(10);
@@ -85,13 +83,11 @@ void loop() {
 void trancarPorta() {
   if (!porta_status) { // Se a porta estiver destrancada
     Serial.println("Trancando a porta...");
-    digitalWrite(enable1Pin, HIGH); // Liga o motor
     digitalWrite(motor1Pin1, LOW);
     digitalWrite(motor1Pin2, HIGH); // Motor gira no sentido horário
     delay(2000); // Simula o tempo de trancamento
     digitalWrite(motor1Pin1, LOW);
     digitalWrite(motor1Pin2, LOW); // Para o motor
-    digitalWrite(enable1Pin, LOW); // Desliga o motor
     porta_status = true; // Atualiza o status para trancada
   }
 }
@@ -99,13 +95,11 @@ void trancarPorta() {
 void destrancarPorta() {
   if (porta_status) { // Se a porta estiver trancada
     Serial.println("Destrancando a porta...");
-    digitalWrite(enable1Pin, HIGH); // Liga o motor
     digitalWrite(motor1Pin1, HIGH);
     digitalWrite(motor1Pin2, LOW); // Motor gira no sentido anti-horário
     delay(2000); // Simula o tempo de destrancamento
     digitalWrite(motor1Pin1, LOW);
     digitalWrite(motor1Pin2, LOW); // Para o motor
-    digitalWrite(enable1Pin, LOW); // Desliga o motor
     porta_status = false; // Atualiza o status para destrancada
   }
 }
