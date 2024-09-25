@@ -47,10 +47,6 @@ Passos para configurar o projeto localmente:
    ```bash
    npx expo start
 
-<p align="center">
-<img src="http://img.shields.io/static/v1?label=STATUS&message=EM%20DESENVOLVIMENTO&color=GREEN&style=for-the-badge"/>
-</p>
-
 ---
 
 > Section in English
@@ -86,7 +82,3 @@ Steps to set up the project locally:
 5. Start the application:
    ```bash
    npx expo start
-
-<p align="center">
-<img src="http://img.shields.io/static/v1?label=STATUS&message=IN%20DEVELOPMENT&color=GREEN&style=for-the-badge"/>
-</p>
